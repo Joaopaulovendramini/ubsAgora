@@ -1,0 +1,12 @@
+{
+  "name": "ubsagora",
+  "private": true,
+  "description": "UBS Agora - APIs Node simples (NestJS + Prisma + PostgreSQL)",
+  "scripts": {
+    "db:up": "docker compose up -d postgres",
+    "install:all": "for a in farmacia agendamento fila; do npm --prefix apps/$a install; done",
+    "setup": "for a in farmacia agendamento fila; do (cd apps/$a && npx prisma migrate deploy && npx prisma generate && npm run seed) || exit 1; done",
+    "build": "for a in farmacia agendamento fila; do npm --prefix apps/$a run build || exit 1; done",
+    "up": "docker compose up -d --build"
+  }
+}

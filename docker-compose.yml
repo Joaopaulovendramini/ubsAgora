@@ -1,0 +1,54 @@
+name: ubsagora
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ubsagora
+      POSTGRES_PASSWORD: ubsagora
+      POSTGRES_DB: postgres
+      TZ: America/Sao_Paulo
+      POSTGRES_INITDB_ARGS: "--locale-provider=icu --icu-locale=pt-BR"
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ubsagora"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api-farmacia:
+    build: ./apps/farmacia
+    environment:
+      DATABASE_URL: postgresql://ubsagora:ubsagora@postgres:5432/farmacia?schema=public
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api-agendamento:
+    build: ./apps/agendamento
+    environment:
+      DATABASE_URL: postgresql://ubsagora:ubsagora@postgres:5432/agendamento?schema=public
+    ports:
+      - "3002:3002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api-fila:
+    build: ./apps/fila
+    environment:
+      DATABASE_URL: postgresql://ubsagora:ubsagora@postgres:5432/fila?schema=public
+    ports:
+      - "3003:3003"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
