@@ -8,10 +8,38 @@ datasource db {
 }
 
 model Ubs {
-  id            Int    @id
-  nome          String
-  endereco      String
-  pessoasNaFila Int    @map("pessoas_na_fila")
+  id       Int         @id
+  codigo   String      @unique
+  nome     String
+  endereco String
+  senhas   Senha[]
+  fluxo    FluxoHora[]
 
   @@map("ubs")
+}
+
+model Senha {
+  id          Int      @id @default(autoincrement())
+  codigo      String
+  ubsId       Int      @map("ubs_id")
+  tipo        String
+  status      String   @default("aguardando")
+  criadaEm    DateTime @default(now()) @map("criada_em")
+  consultaId  Int?     @map("consulta_id")
+  pacienteCns String?  @map("paciente_cns")
+  guiche      String?
+  ubs         Ubs      @relation(fields: [ubsId], references: [id], onDelete: Cascade)
+
+  @@index([ubsId, criadaEm])
+  @@map("senhas")
+}
+
+model FluxoHora {
+  ubsId    Int @map("ubs_id")
+  hora     Int
+  chegadas Int
+  ubs      Ubs @relation(fields: [ubsId], references: [id], onDelete: Cascade)
+
+  @@id([ubsId, hora])
+  @@map("fluxo_horas")
 }

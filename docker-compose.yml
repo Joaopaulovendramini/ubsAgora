@@ -10,7 +10,7 @@ services:
       TZ: America/Sao_Paulo
       POSTGRES_INITDB_ARGS: "--locale-provider=icu --icu-locale=pt-BR"
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
@@ -44,6 +44,11 @@ services:
     build: ./apps/fila
     environment:
       DATABASE_URL: postgresql://ubsagora:ubsagora@postgres:5432/fila?schema=public
+      # Webhook para o app Rails (opcional). Vazio = não envia.
+      WEBHOOK_URL: ${FILA_WEBHOOK_URL:-http://host.docker.internal:3100/webhooks/fila}
+      WEBHOOK_SECRET: ${FILA_WEBHOOK_SECRET:-dev-webhook-secret-troque-em-producao}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "3003:3003"
     depends_on:
