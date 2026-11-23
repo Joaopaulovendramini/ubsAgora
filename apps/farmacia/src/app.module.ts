@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { MedicamentosController } from './controllers/medicamentos.controller';
-import { MedicamentoRepository } from './repositories/medicamento.repository';
+import { EstoqueController } from './controllers/estoque.controller';
+import { EstoqueRepository } from './repositories/estoque.repository';
 import { PrismaService } from './repositories/prisma.service';
-import { MedicamentosService } from './services/medicamentos.service';
+import { EstoqueService } from './services/estoque.service';
 
 @Module({
-  controllers: [MedicamentosController],
-  providers: [PrismaService, MedicamentoRepository, MedicamentosService],
+  controllers: [EstoqueController],
+  providers: [PrismaService, EstoqueRepository, EstoqueService],
 })
 export class AppModule {}

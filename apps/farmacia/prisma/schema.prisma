@@ -8,11 +8,38 @@ datasource db {
 }
 
 model Medicamento {
-  id           Int    @id @default(autoincrement())
-  nome         String
-  concentracao String
-  forma        String
-  quantidade   Int
+  id            Int            @id @default(autoincrement())
+  nome          String
+  concentracao  String
+  forma         String
+  estoqueMinimo Int            @default(50)
+  estoques      Estoque[]
+  movimentacoes Movimentacao[]
 
   @@map("medicamentos")
+}
+
+model Estoque {
+  ubsCodigo     String
+  medicamentoId Int
+  quantidade    Int         @default(0)
+  medicamento   Medicamento @relation(fields: [medicamentoId], references: [id], onDelete: Cascade)
+
+  @@id([ubsCodigo, medicamentoId])
+  @@map("estoque")
+}
+
+model Movimentacao {
+  id            Int         @id @default(autoincrement())
+  ubsCodigo     String
+  medicamentoId Int
+  tipo          String // 'entrada' | 'baixa'
+  quantidade    Int
+  saldo         Int
+  criadaEm      DateTime    @default(now())
+  medicamento   Medicamento @relation(fields: [medicamentoId], references: [id], onDelete: Cascade)
+
+  @@index([ubsCodigo, criadaEm])
+  @@index([criadaEm])
+  @@map("movimentacoes")
 }
