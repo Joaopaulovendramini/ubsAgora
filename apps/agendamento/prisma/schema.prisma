@@ -10,13 +10,16 @@ datasource db {
 model Horario {
   id            Int          @id @default(autoincrement())
   dataHora      DateTime     @map("data_hora")
-  ubs           String
-  profissional  String
-  especialidade String
+  ubs             String
+  ubsCodigo       String       @map("ubs_codigo")
+  profissional    String
+  especialidade   String
+  especialidadeId String       @map("especialidade_id")
   disponivel    Boolean      @default(true)
   agendamento   Agendamento?
 
   @@index([dataHora, disponivel])
+  @@index([ubsCodigo, especialidadeId])
   @@map("horarios")
 }
 
@@ -25,6 +28,7 @@ model Agendamento {
   horarioId    Int      @unique @map("horario_id")
   pacienteNome String   @map("paciente_nome")
   pacienteCns  String   @map("paciente_cns")
+  status       String   @default("agendada")
   criadoEm     DateTime @default(now()) @map("criado_em")
   horario      Horario  @relation(fields: [horarioId], references: [id])
 
